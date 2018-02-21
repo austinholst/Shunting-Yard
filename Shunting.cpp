@@ -6,11 +6,20 @@
 #include "Token.h"
 #include "Node.h"
 
+/*
+ *Author: Austin Holst (With help from Raveen Karnik on building the binary expression tree and prefix notation)
+ *Date: Febuary 21, 2018
+ *Code: Uses the shunting yard algorithm to put expression into postfix and then builds epxression tree out of it
+ *      Can then put expression into postix, prefix, or infix from that expression tree
+ */
+
+
 using namespace std;
 
 //Vectors
 vector<Token*> tokens;
 
+//Prototype
 Node* listing(Node* &head, Token* newToken);
 Node* findEnd(Node* head);
 void print(Node* head);
@@ -18,7 +27,6 @@ Node* pop(Node* head);
 void printPostfix(Node* head);
 void printPrefix(Node* head);
 void printInfix(Node* head);
-//void visualize(Node* head, int depth);
 
 //Associativity constants
 const int NONE = 0;
@@ -247,6 +255,7 @@ Node* pop(Node* head) {
   }
 }
 
+//Print out the expression after shunting yard
 void print(Node* head) {
   if(head == NULL) {
     cout << "There is no nodes" << endl;
@@ -270,6 +279,7 @@ void print(Node* head) {
   }
 }
 
+//Find the end of a linked list
 Node* findEnd(Node* head) {
   if(head->getNext() != NULL) {
     return findEnd(head->getNext());
@@ -279,7 +289,7 @@ Node* findEnd(Node* head) {
   }
 }
 
-
+//Pushing a new node to the list
 Node* listing(Node* &head, Token* newToken) {
   Node* node = new Node(newToken);
   if(head == NULL) {
