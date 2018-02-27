@@ -88,14 +88,39 @@ int main() {
     if(current->getToken()->getType() == NUM) {
       listing(outputHead, current->getToken());
     }
+    //If the token is a parenthesis
+    else if(current->getToken()->getType() == PAR) {
+      //If the token is a ( push onto operator stack
+      if(current->getToken()->getChar() == '(') {
+	listing(operatorHead, current->getToken());
+      }
+      //If the token is a )
+      else {
+	while(findEnd(operatorHead)->getToken()->getType() != PAR) {
+	  listing(outputHead, findEnd(operatorHead)->getToken());
+	  Node* end = findEnd(operatorHead);
+	  end->getPrevious()->setNext(NULL);
+	  delete end;
+	}
+	delete findEnd(operatorHead)->getToken();
+	Node* end = findEnd(operatorHead);
+	if(end->getPrevious() != NULL) {
+	  end->getPrevious()->setNext(NULL);
+	  delete end;
+	}
+	else {
+	  operatorHead = NULL;
+	}
+      }
+    }
     //If the token is an operator
-    else if(current->getToken()->getType() == OP) {
+    else {
       if(operatorHead != NULL) {
 	while(((findEnd(operatorHead)->getToken()->getPrec() > current->getToken()->getPrec()) ||
 	       (findEnd(operatorHead)->getToken()->getPrec() == current->getToken()->getPrec() &&
-	        findEnd(operatorHead)->getToken()->getAssoc() == LEFT)) &&
-	       (findEnd(operatorHead)->getToken()->getChar() != '(')) {
-	 
+		findEnd(operatorHead)->getToken()->getAssoc() == LEFT)) &&
+	      (findEnd(operatorHead)->getToken()->getChar() != '(')) {
+
 	  listing(outputHead, findEnd(operatorHead)->getToken());
 	  Node* end = findEnd(operatorHead);
 	  if(end->getPrevious() != NULL) {
@@ -106,26 +131,12 @@ int main() {
 	    operatorHead = NULL;
 	    break;
 	  }
-        }
+	}
       }
       listing(operatorHead, current->getToken());
     }
-    //If the token is a ( push onto operator stack
-    else if(current->getToken()->getChar() == '(') {
-      listing(operatorHead, current->getToken());
-    }
-    //If the token is a ) 
-    else if(current->getToken()->getChar() == ')') {
-      while(findEnd(operatorHead)->getToken()->getChar() != '(') {
-	listing(outputHead, findEnd(operatorHead)->getToken());
-	//pop(operatorHead);
-	Node* end = findEnd(operatorHead);
-	end->getPrevious()->setNext(NULL);
-	delete end;
-      }
-      delete findEnd(operatorHead)->getToken();
-      delete pop(operatorHead);
-    }
+
+    
     //Move to the next node
     Node* prev = current;
     current = current->getNext();
@@ -142,10 +153,10 @@ int main() {
       operatorHead = NULL;
     }
   }
-  
+
   print(outputHead);
   cout << "" << endl;
-
+  
   //Creating expression tree (Thanks Raveen for showing me this method)
   Node* treeTop = findEnd(outputHead);
   current = outputHead;
@@ -165,6 +176,7 @@ int main() {
     current = current->getNext();
   }
 
+  
   char* answer = new char[20];
   cout << "Would you like to print the expression in 'postfix' 'prefix' or 'infix' notation" << endl;
   cin.getline(answer, 20);
